@@ -1,0 +1,40 @@
+Cac lenh trong Vim
+-------------------------------------
+* Di chuyen
+-------------------------------------
+$ // Nhay ve cuoi dong hien tai
+0 // Nhay ve dau dong hien tai
+gg // Nhay len dau file
+G // Nhay xuong cuoi file
+50G // Nhay toi dong 50 cua file
+H // Nhay toi top man hinh
+M // Nhay toi giua man hinh
+L // Nhay toi cuoi man hinh
+w // Nhay toi phan dau cua moi word
+e // Nhay toi phan cuoi moi word
+b // Nhay tro lai phan dau moi word
+-------------------------------------
+* Tab
+-------------------------------------
+:tabnew or :tabnew file // Mo 1 tab hoac 1 file trong tab moi
+gt // Di chuyen giua cac tab
+:tabc // Dong 1 tab
+:tabo // DOng tat ca cac tab ngoai tru tab dang dung
+-------------------------------------
+* Cut and paste
+-------------------------------------
+yy // Copy 1 dong
+50yy // Copy 50 dong
+y$ // Copy tu con tro toi cuoi dong
+p // Paste sau con tro
+P // Paste truoc con tro
+dd // Xoa 1 dong
+50dd // Xoa 50 dong
+dw // Xoa tu con tro toi bat dau tu tiep theo
+D // Xoa tu con tro toi cuoi dong
+-------------------------------------
+* Search
+-------------------------------------
+/parttern // Search for parttern
+n // Tiep tuc search tu tiep theo
+N // Search theo chieu nguoc lai 
