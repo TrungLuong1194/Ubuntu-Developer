@@ -1,0 +1,93 @@
+* Getting the shell
+---------------------------------------------------------------------
++ pwd // Present working directory
++ The single dot (.) // Current directory
++ The double dot (..) // Parent directory
++ A question mark (?) to present one character
++ An asterisk (*) to present any number of characters
+	- ls -l my_scr?pt
+	- ls -l my*
+	- ls -l my_scr[ai]pt // a or i
+	- ls -l f[a-i]ll // from a to i
+	- ls -l f[!a]ll // not be included a
+---------------------------------------------------------------------
+* Handling files
+---------------------------------------------------------------------
++ touch file_name // Create file
++ cp source   destination // Copy file
++ mv old_name   new_name // Rename file
++ mv file   directory // Moving file (cut paste)
++ rm -i file_name // Delete file
++ cat file_name // View file
++ more,less,tail,head file_name // View file 
+---------------------------------------------------------------------
+* Manage directory
+---------------------------------------------------------------------
++ mkdir New_Dir // Create directory
++ rmdir New_Dir // Delete directory when empty
+---------------------------------------------------------------------
+* Monitoring program
+---------------------------------------------------------------------
++ ps // Show processes
+	- UID: The user responsible for launching the process
+	- PID: The process ID of the process
+	- PPID: The PID of the parent process (if a process is started by another process)
+	- C: Processor utilization over the lifetime of the process
+	- STIME: The system time when the process started
+	- TTY: The terminal device from which the process was launched
+	- TIME: The cumulative CPU time required to run the process
+	- CMD: The name of the program that was started
+---------------------------------------------------------------------
+* Working with data files
+---------------------------------------------------------------------
++ sort file // Sort
++ grep [option] pattern [file] // Search data
+---------------------------------------------------------------------
+* Variables
+---------------------------------------------------------------------
++ Local variable
+	- echo $my_variable
+	  
+	  my_variable=Hello
+	  
+	  echo $my_variable
+	
+	  my_variable="Hello World"
+
+	  echo $my_variable
+	
+	  bash // Child bash
+
+	  echo $my_variable // Khong hien thi gia tri bien
+
+	  exit
++ Global variable
+	- my_variable="I am Trung"
+	  
+	  export my_variable
+
+	  echo $my_variable
+
+	  bash
+
+	  echo $my_variable
+
+	  exit
++ Removing variable
+	- echo $my_variable
+
+	  unset my_variable
++ Variable arrays
+	- mytest=(one two three four five)
+
+	  echo ${mytest[*]}
+
+	  echo ${mytest[2]}
+
+---------------------------------------------------------------------
+* File permission
+---------------------------------------------------------------------
++ /usr/sbin/useradd -D // See the system default values used on your Linux
++ useradd -m test // Create a new user
++ userdel -r test // Remove a user
+
