@@ -1,0 +1,28 @@
+* Getting the shell
+---------------------------------------------------------------------
++ pwd // Present working directory
++ The single dot (.) // Current directory
++ The double dot (..) // Parent directory
++ A question mark (?) to present one character
++ An asterisk (*) to present any number of characters
+	- ls -l my_scr?pt
+	- ls -l my*
+	- ls -l my_scr[ai]pt // a or i
+	- ls -l f[a-i]ll // from a to i
+	- ls -l f[!a]ll // not be included a
+---------------------------------------------------------------------
+* Handling files
+---------------------------------------------------------------------
++ touch file_name // Create file
++ cp source   destination // Copy file
++ mv old_name   new_name // Rename file
++ mv file   directory // Moving file (cut paste)
++ rm -i file_name // Delete file
++ cat file_name // View file
++ more,less,tail,head file_name // View file 
+---------------------------------------------------------------------
+* Manage directory
+---------------------------------------------------------------------
++ mkdir New_Dir // Create directory
++ rmdir New_Dir // Delete directory when empty
+
