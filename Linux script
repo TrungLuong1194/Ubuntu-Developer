@@ -90,4 +90,146 @@
 + /usr/sbin/useradd -D // See the system default values used on your Linux
 + useradd -m test // Create a new user
 + userdel -r test // Remove a user
++ Permission symbols:
+	-rw-rw-r--
+	drwxrwxr-x
+- The first field:
+	- for files
+	d for directories
+	l for links
+	c for character devices
+	b for block devices
+	n for network devices
+- Three sets of three characters. Each set of three characters defines an access permission triplet:
+	r for read permission for the object
+	w for write permission for the object
+	x for execute permission for the object
+- The first triplet: permissions for everyone else, the second: for group members, the third: for the file owner.
++ Linux file permission codes:
+Permissions 	Binary 	Octal 	Description
+--- 	        000 	0 	No permissions
+--x 	        001 	1 	Execute-only permission
+-w- 	        010 	2 	Write-only permission
+-wx 	        011 	3 	Write and execute permissions
+r-- 	        100 	4 	Read-only permission
+r-x 	        101 	5 	Read and execute permissions
+rw- 	        110 	6 	Read and write permissions
+rwx 	        111 	7 	Read, write, and execute permissions
+	- default file permissions: -rw-r--r-- (644)
+	- umask 0022
+	- The full permission for a file is mode 666, for a directory is 777
++ Changing permissions: chmod options mode file
+	- [ugoa...][[+-=][rwxXstugo...]
+	u for the user
+	g for the group
+	o for others (everyone else)
+	a for all of the above
+	---------------------------
+	X assigns execute permissions only if the object is a directory or if it already had execute permissions.
+	s sets the UID or GID on execution.
+	t saves program text.
+	u sets the permissions to the owner’s permissions.
+	g sets the permissions to the group’s permissions.
+	o sets the permissions to the other’s permissions.
+	---------------------------
+	chmod o+r newfile
+	chmod u+x newfile
+	chmod u-x newfile
+---------------------------------------------------------------------
+* Script building
+---------------------------------------------------------------------
++ Multiple commands: 
+	date ; who
++ Displaying messages: 
+	echo This is a test
+	echo "This is a test to see if you're paying attention"
+	echo -n "The time and date are: " // echo a text string on the same line as a command
++ User variables:
+	#!/bin/bash
+	# testing variables
+	days=10
+	guest="Katie"
+	echo "$guest checked in $days days ago"
+	days=5
+	guest="Jessica"
+	echo "$guest checked in $days days ago"
+	------------------------------------
+	#!/bin/bash
+	# assigning a variable value to another variable
 
+	value1=10
+	value2=$value1
+	echo The resulting value is $value2
++ Output redirection:
+	command > outputfile
+	---------------------
+	date > test6
+	who > test6
+	---------------------
+	command >> outputfile // append output from a command to an existing file
+	---------------------
+	date >> test6
++ Input redirection:
+	command < inputfile
+	---------------------
+	wc < test6
+		2	11	60 // output
+	wc command provides a count of text in the data:
+	- The number of lines in the text
+	- The number of words in the text
+	- The number of bytes in the text
+	---------------------
+	command << marker
+	data
+	marker
+	---------------------
+	wc << EOF
+	> test string 1
+	> test string 2
+	> test string 3
+	> EOF
+		3	9	42 // output
++ Performing Math
+	- Using brackets
+	-----------------------
+	var1=$[1 + 5]
+	echo $var1
+	
+	var2=$[$var1 * 2]
+	echo $var2
+	-----------------------
+	#!/bin/bash
+	var1=100
+	var2=50
+	var3=45
+	var4=$[$var1 * ($var2 - $var3)]
+	echo The final result is $var4
+	-----------------------
+	- A floating-point solution:
+	variable=$(echo "options; expression" | bc)
+	-----------------------
+	var1=$(echo "scale=4; 3.44 / 5" | bc)	
+	echo The answer is $var1 // output: .6880
+	-----------------------
+	variable=$(bc << EOF
+	options
+	statements
+	expressions
+	EOF
+	)
+	-----------------------
+	var1=10.46
+	var2=43.67
+	var3=33.2
+	var4=71
+
+	var5=$(bc << EOF
+	scale = 4
+	a1 = ($var1 * $var2)
+	a2 = ($var3 * $var4)
+	a1 + b1
+	EOF
+	)
+
+	echo The final answer for this mess is $var5
+			
