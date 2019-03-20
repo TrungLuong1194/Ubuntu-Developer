@@ -231,5 +231,65 @@ rwx 	        111 	7 	Read, write, and execute permissions
 	EOF
 	)
 
-	echo The final answer for this mess is $var5
-			
+	echo The final answer for this mess is $var5			
+---------------------------------------------------------------------
+* Structured commands
+---------------------------------------------------------------------
++ if-then
+	if command
+	then
+	    commands
+	fi
+	--------------------------
+	#!/bin/bash
+	# testing multiple commands in the then section
+	# 
+	testuser=trungluong
+	#
+	if grep $testuser /etc/passwd
+	then
+	   echo "This is my first command"
+	   echo "This is my second command"
+	   ls -a/home/$testuser/.b*
+	fi
+	--------------------------
+	if command
+	then
+	   commands
+	else
+	   commands
+	fi
+	--------------------------
+	testuser=NoSuchUser
+	#
+	if grep $testuser /etc/passwd
+	then
+	   echo "The bash files for user $testuser are:"
+	   ls -a /home/$testuser/.b*
+	   echo
+	else
+	   echo "The user $testuser does not exist on this system."
+	   echo
+	fi
+	--------------------------
+	if command1
+	then
+	   commands
+	elif command2
+	then
+	   more commands
+	fi
+	--------------------------
++ Test:
+	if [ condition ]
+	then
+	   commands
+	fi
+	-------------------------------------
+	- Numeric:
+	n1 -eq n2      Checks if n1 is equal to n2
+	n1 -ge n2      Checks if n1 is greater than or equal to n2
+	n1 -gt n2      Checks if n1 is less than n2
+	n1 -le n2      Checks if n1 is less than or equal to n2
+	n1 -lt n2      Checks if n1 is less than n2
+	n1 -ne n2      Checks if n1 is not equal to n2
