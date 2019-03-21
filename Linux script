@@ -231,5 +231,410 @@ rwx 	        111 	7 	Read, write, and execute permissions
 	EOF
 	)
 
-	echo The final answer for this mess is $var5
-			
+	echo The final answer for this mess is $var5			
+---------------------------------------------------------------------
+* Structured commands
+---------------------------------------------------------------------
++ if-then
+	if command
+	then
+	    commands
+	fi
+	--------------------------
+	#!/bin/bash
+	# testing multiple commands in the then section
+	# 
+	testuser=trungluong
+	#
+	if grep $testuser /etc/passwd
+	then
+	   echo "This is my first command"
+	   echo "This is my second command"
+	   ls -a/home/$testuser/.b*
+	fi
+	--------------------------
+	if command
+	then
+	   commands
+	else
+	   commands
+	fi
+	--------------------------
+	testuser=NoSuchUser
+	#
+	if grep $testuser /etc/passwd
+	then
+	   echo "The bash files for user $testuser are:"
+	   ls -a /home/$testuser/.b*
+	   echo
+	else
+	   echo "The user $testuser does not exist on this system."
+	   echo
+	fi
+	--------------------------
+	if command1
+	then
+	   commands
+	elif command2
+	then
+	   more commands
+	fi
+	--------------------------
++ Test:
+	if [ condition ]
+	then
+	   commands
+	fi
+	-------------------------------------
+	- Numeric:
+	n1 -eq n2      Checks if n1 is equal to n2
+	n1 -ge n2      Checks if n1 is greater than or equal to n2
+	n1 -gt n2      Checks if n1 is greater than n2
+	n1 -le n2      Checks if n1 is less than or equal to n2
+	n1 -lt n2      Checks if n1 is less than n2
+	n1 -ne n2      Checks if n1 is not equal to n2
+	-------------------------------------
+	- String:
+	str1 = str2 	Checks if str1 is the same as string str2
+	str1 != str2 	Checks if str1 is not the same as str2
+	str1 < str2 	Checks if str1 is less than str2
+	str1 > str2 	Checks if str1 is greater than str2
+	-n str1 	Checks if str1 has a length greater than zero
+	-z str1 	Checks if str1 has a length of zero
+	-------------------------------------
+	- File:
+	-d file 		Checks if file exists and is a directory
+	-e file 		Checks if file exists
+	-f file 		Checks if file exists and is a file
+	-r file 		Checks if file exists and is readable
+	-s file 		Checks if file exists and is not empty
+	-w file 		Checks if file exists and is writable
+	-x file 		Checks if file exists and is executable
+	-O file 		Checks if file exists and is owned by the current user
+	-G file 		Checks if file exists and the default group is the same as the current user
+	file1 -nt file2 	Checks if file1 is newer than file2
+	file1 -ot file2 	Checks if file1 is older than file2
+	----------------------------------------
+	- Compound testing
+	[ condition1 ] && [ condition2 ]
+	[ condition1 ] || [ condition2 ]
++ Double parentheses (( )) for mathematical expressions
+	(( expression ))
+	-----------------------------------
+	#!/bin/bash
+	# using double parenthesis
+	#
+	val1=10
+	#
+	if (( $val1 ** 2 > 90 ))
+	then
+	   (( val2 = $val1 ** 2 ))
+	   echo "The square of $val1 is $val2"
+	fi
++ Double brackets [[ ]] for string comparisons
+	[[ expression ]]
+	---------------------------------------
+	if [[ $USER == t* ]]
+	then
+	   echo "Hello $USER"
+	else
+	   echo "Sorry, I do not know you"
+	fi
++ Case:
+	case variable in
+	pattern1 | pattern2) commands1;;
+	pattern3) commands2;;
+	*) default commands;;
+	esac
+	------------------------------------
+	#!/bin/bash
+	# using the case command
+	#
+	case $USER in
+	rich | barbara)
+	   echo "Welcome, $USER"
+	   echo "Please enjoy your visit";;
+	testing)
+	   echo "Special testing account";;
+	jessica)
+	   echo "Do not forget to log off when you're done";;
+	*)
+	   echo "Sorry, you are not allowed here";;
+	esac
++ For:
+	for var in list
+	do
+	   commands
+	done
+	---------------------------
+	list="Alabama Alaska Arizona Arkansas Colorado"
+
+	for state in $list
+	do
+	   echo "Have you ever visited $state?"
+	done
+	----------------------------
+	file="states"
+
+	for state in $(cat $file)
+	do
+	   echo "Visit beautiful $state"
+	done
+	------------------------------
+	- Changing the field separator
+	A space
+	A tab: \t
+	A newline: \n
+	- IFS defines a list of characters the bash shell uses as field separators
+	- More than one IFS charater:
+	IFS=$'\n':;" ('\n or : or ; or ")
+	--------------------------------------
+	file="states"
+
+	IFS=$'\n'
+
+	for state in $(cat $file)
+	do
+	   echo "Visit beautiful $state"
+	done
+	----------------------------------------------
+	- C styles:
+	for (( variable assignment ; condition ; iteration process ))
+	----------------------------------------------
+	#!/bin/bash
+	# testing the C-style for loop
+
+	for (( i=1; i <= 10; i++ ))
+	do
+	   echo "The next number is $i"
+	done
++ While:
+	while test command
+	do
+	   other commands
+	done
+	--------------------------------
+	var1=10
+	while [ $var1 -gt 0 ]
+	do
+	   echo $var1
+	   var1=$[ $var1 - 1 ]
+	done
++ Until:
+	until test commands
+	do
+	   other commands
+	done
+	-------------------------------------
+	#!/bin/bash
+	# using the until command
+	
+	var1=100
+
+	until [ $var1 -eq 0 ]
+	do
+	   echo $var1
+	   var1=$[ $var1 - 25 ]
+	done
+	$ ./test12
+	100
+	75
+	50
+	25
++ Processing the output of a Loop
+	#!/bin/bash
+	# redirecting the for output to a file
+
+	for (( a = 1; a < 10; a++ ))
+	do
+	   echo "The number is $a"
+	done > test23.txt
+	echo "The command is finished."
+
+	$ ./test23
+	The command is finished.
+	$ cat test23.txt
+	The number is 1
+	The number is 2
+	The number is 3
+	The number is 4
+	The number is 5
+	The number is 6
+	The number is 7
+	The number is 8
+	The number is 9
+---------------------------------------------------------------------
+* Handling user input
+---------------------------------------------------------------------
++ Passing Parameters:
+	- With $0 being the script’s name, $1 being the first parameter, $2 being the second parameter, and so on, up to $9 for the ninth parameter.
+	----------------------------
+	#!/bin/bash
+	# testing two command line parameters
+	#
+	total=$[ $1 * $2 ]
+	echo The first parameter is $1.
+	echo The second parameter is $2.
+	echo The total value is $total.
+	$
+	$ ./test2.sh 2 5
+	The first parameter is 2.
+	The second parameter is 5.
+	The total value is 10.
+	-----------------------------------
+	- If your script needs more than nine command line parameters, you can continue, but the variable names change slightly. After the ninth variable, you must use braces around the variable number, such as ${10}
+	------------------------------------
+	#!/bin/bash
+	# handling lots of parameters
+	#
+	total=$[ ${10} * ${11} ]
+	echo The tenth parameter is ${10}
+	echo The eleventh parameter is ${11}
+	echo The total is $total
+	$
+	$ ./test4.sh 1 2 3 4 5 6 7 8 9 10 11 12
+	The tenth parameter is 10
+	The eleventh parameter is 11
+	The total is 110
+	$
++ Counting parameters
+	- The special $# variable contains the number of command line parameters included when the script was run
+	---------------------------------------------
+	#!/bin/bash
+	# getting the number of parameters
+	#
+	echo There were $# parameters supplied.
+	$
+	$ ./test8.sh
+	There were 0 parameters supplied.
+	$
+	$ ./test8.sh 1 2 3 4 5
+	There were 5 parameters supplied.
+	$
+	$ ./test8.sh 1 2 3 4 5 6 7 8 9 10
+	There were 10 parameters supplied.
+	$
+	$ ./test8.sh "Rich Blum"
+	There were 1 parameters supplied.
+	$
++ Grabbing all the data (Lay tat ca du lieu)
+	- The $* variable takes all the parameters supplied on the command line as a single word.
+	- The $@ variable, on the other hand, takes all the parameters supplied on the command line as separate words in the same string.
+	--------------------------------------------------
+	#!/bin/bash
+	# testing $* and $@
+	#
+	echo
+	count=1
+	#
+	for param in "$*"
+	do
+	   echo "\$* Parameter #$count = $param"
+	   count=$[ $count + 1 ]
+	done
+	#
+	echo
+	count=1
+	#
+	for param in "$@"
+	do
+	   echo "\$@ Parameter #$count = $param"
+	   count=$[ $count + 1 ]
+	done
+	$
+	$ ./test12.sh rich barbara katie jessica
+
+	$* Parameter #1 = rich barbara katie jessica
+
+	$@ Parameter #1 = rich
+	$@ Parameter #2 = barbara
+	$@ Parameter #3 = katie
+	$@ Parameter #4 = jessica
+	$
++ Shift:
+	#!/bin/bash
+	# demonstrating the shift command
+	echo
+	count=1
+	while [ -n "$1" ]
+	do
+	   echo "Parameter #$count = $1"
+	   count=$[ $count + 1 ]
+	   shift
+	done
+	$
+	$ ./test13.sh rich barbara katie jessica
+
+	Parameter #1 = rich
+	Parameter #2 = barbara
+	Parameter #3 = katie
+	Parameter #4 = jessica
+	$
++ Options:
+	#!/bin/bash
+	# extracting command line options as parameters
+	#
+	echo
+	while [ -n "$1" ]
+	do
+	   case "$1" in
+	     -a) echo "Found the -a option" ;;
+	     -b) echo "Found the -b option" ;;
+	     -c) echo "Found the -c option" ;;
+	     *) echo "$1 is not an option" ;;
+	   esac
+	   shift
+	done
+	$
+	$ ./test15.sh -a -b -c -d
+	
+	Found the -a option
+	Found the -b option
+	Found the -c option
+	-d is not an option
+	$
+	--------------------------------------------------------
+	#!/bin/bash
+	# extracting options and parameters
+	echo
+	while [ -n "$1" ]
+	do
+	   case "$1" in
+	      -a) echo "Found the -a option" ;;
+	      -b) echo "Found the -b option";;
+	      -c) echo "Found the -c option" ;;
+	      --) shift
+	          break ;;
+	       *) echo "$1 is not an option";;
+	   esac
+	   shift
+	done
+	#
+	count=1
+	for param in $@
+	do
+	   echo "Parameter #$count: $param"
+	   count=$[ $count + 1 ]
+	done
+	$
+
+	./test16.sh -c -a -b test1 test2 test3
+
+	Found the -c option
+	Found the -a option
+	Found the -b option
+	test1 is not an option
+	test2 is not an option
+	test3 is not an option
+	$
+
+	./test16.sh -c -a -b -- test1 test2 test3
+
+	Found the -c option
+	Found the -a option
+	Found the -b option
+	Parameter #1: test1
+	Parameter #2: test2
+	Parameter #3: test3
+	$
+
