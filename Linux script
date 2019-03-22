@@ -637,4 +637,191 @@ rwx 	        111 	7 	Read, write, and execute permissions
 	Parameter #2: test2
 	Parameter #3: test3
 	$
++ Read: accepts input either from standar input (such as from the keyboard) or from another file descriptor.
+	#!/bin/bash
+	# testing the read command
+	#
+	echo -n "Enter your name: "
+	read name
+	echo "Hello $name, welcome to my program. "
+	#
+	$
+	$ ./test21.sh
+	Enter your name: Rich Blum
+	Hello Rich Blum, welcome to my program.
+	$
+	-------------------------------------------
+	- The read command includes the -p option, which allows you to specify a prompt directly in the read command line:
+	--------------------------------------------------
+	#!/bin/bash
+	# testing the read -p option
+	#
+	read -p "Please enter your age: " age
+	days=$[ $age * 365 ]
+	echo "That makes you over $days days old! "
+	#
+	$
+	$ ./test22.sh
+	Please enter your age: 10
+	That makes you over 3650 days old!
+	$
+	--------------------------------------------------
+	#!/bin/bash
+	# entering multiple variables
+	#
+	read -p "Enter your name: " first last
+	echo "Checking data for $last, $first..."
+	$
+	$ ./test23.sh
+	Enter your name: Rich Blum
+	Checking data for Blum, Rich...
+	$
+---------------------------------------------------------------------
+* Presenting Data
+---------------------------------------------------------------------
++ Linux standard file descriptors
+	File Descriptor 	Abbreviation 	Description
+		0 		STDIN 		Standard input
+		1 		STDOUT 		Standard output
+		2 		STDERR 		Standard error
+	----------------------------------------------------
+	$ ls -al badfile 2> test4
+	$ cat test4
+	ls: cannot access badfile: No such file or directory
+	$
+	---------------------------------------------------------
+	$ ls -al test badtest test2 2> test5
+	-rw-rw-r-- 1 rich rich 158 2014-10-16 11:32 test2
+	$ cat test5
+	ls: cannot access test: No such file or directory
+	ls: cannot access badtest: No such file or directory
+	$
+	--------------------------------------------------------
+	$ ls -al test test2 test3 badtest 2> test6 1> test7
+	$ cat test6
+	ls: cannot access test: No such file or directory
+	ls: cannot access badtest: No such file or directory
+	$ cat test7
+	-rw-rw-r-- 1 rich rich 158 2014-10-16 11:32 test2
+	-rw-rw-r-- 1 rich rich
+	0 2014-10-16 11:33 test3
+	$
+	-------------------------------------------------------
+	- if you want, you can redirect both STDERR and STDOUT output to the same output file. The bash shell provides a special redirection symbol just for this purpose, the &> symbol:
+	$ ls -al test test2 test3 badtest &> test7
+	$ cat test7
+	ls: cannot access test: No such file or directory
+	ls: cannot access badtest: No such file or directory
+	-rw-rw-r-- 1 rich rich 158 2014-10-16 11:32 test2
+	-rw-rw-r-- 1 rich rich
+	0 2014-10-16 11:33 test3
+	$
++ Redirecting output in scripts
+	$ cat test8
+	#!/bin/bash
+	# testing STDERR messages
+	echo "This is an error" >&2
+	echo "This is normal output"
+	$
+	$ ./test8
+	This is an error
+	This is normal output
+	$
+	$ ./test8 2> test9
+	This is normal output
+	$ cat test9
+	This is an error
+	$
+	------------------------------------------
+	$ cat test10
+	#!/bin/bash
+	# redirecting all output to a file
+	exec 1>testout
 
+	echo "This is a test of redirecting all output"
+	echo "from a script to another file."
+	echo "without having to redirect every individual line"
+	$ ./test10
+	$ cat testout
+	This is a test of redirecting all output
+	from a script to another file.
+	without having to redirect every individual line
+	$
+	--------------------------------------------------
+	$ cat test11
+	#!/bin/bash
+	# redirecting output to different locations
+
+	exec 2>testerror
+
+	echo "This is the start of the script"
+	echo "now redirecting all output to another location"
+
+	exec 1>testout
+
+	echo "This output should go to the testout file"
+	echo "but this should go to the testerror file" >&2
+	$
+	$ ./test11
+	This is the start of the script
+	now redirecting all output to another location
+	$ cat testout
+	This output should go to the testout file
+	$ cat testerror
+	but this should go to the testerror file
+	$ 
++ Redirecting input in scripts:
+	$ cat test12
+	#!/bin/bash
+	# redirecting file input
+
+	exec 0< testfile
+	count=1
+
+	while read line
+	do
+	   echo "Line #$count: $line"
+	   count=$[ $count + 1 ]
+	done
+	$ ./test12
+	Line #1: This is the first line.
+	Line #2: This is the second line.
+	Line #3: This is the third line.
+	$
++ Creating output file descriptors:
+	$ cat test13
+	#!/bin/bash
+	# using an alternative file descriptor
+
+	exec 3>test13out
+
+	echo "This should display on the monitor"
+	echo "and this should be stored in the file" >&3
+	echo "Then this should be back on the monitor"
+	$ ./test13
+	This should display on the monitor
+	Then this should be back on the monitor
+	$ cat test13out
+	and this should be stored in the file
+	$
++ Creating a read/write file descriptor:
+	$ cat test16
+	#!/bin/bash
+	# testing input/output file descriptor
+
+	exec 3<> testfile
+	read line <&3
+	echo "Read: $line"
+	echo "This is a test line" >&3
+	$ cat testfile
+	This is the first line.
+	This is the second line.
+	This is the third line.
+	$ ./test16
+	Read: This is the first line.
+	$ cat testfile
+	This is the first line.
+	This is a test line
+	ine.
+	This is the third line.
+	$
