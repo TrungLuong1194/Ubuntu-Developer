@@ -825,3 +825,367 @@ rwx 	        111 	7 	Read, write, and execute permissions
 	ine.
 	This is the third line.
 	$
+---------------------------------------------------------------------
+* Creating functions
+---------------------------------------------------------------------
++ Creating a function:
+	function name {
+	    commands
+	}
+	----------------------------------
+	name() {
+	commands
+	}
+	--------------------------------------
+	$ cat test1
+	#!/bin/bash
+	# using a function in a script
+
+	function func1 {
+	   echo "This is an example of a function"
+	}
+
+	count=1
+	while [ $count -le 5 ]
+	do
+	   func1
+	   count=$[ $count + 1 ]
+	done
+
+	echo "This is the end of the loop"
+	func1
+	echo "Now this is the end of the script"
+	$
+	$ ./test1
+	This is an example of a function
+	This is an example of a function
+	This is an example of a function
+	This is an example of a function
+	This is an example of a function
+	This is the end of the loop
+	This is an example of a function
+	Now this is the end of the script
+	$
++ Returning a value:
+	$ cat test5b
+	#!/bin/bash
+	# using the echo to return a value
+
+	function dbl {
+	   read -p "Enter a value: " value
+	   echo $[ $value * 2 ]
+	}
+
+	result=$(dbl)
+	echo "The new value is $result"
+	$
+	$ ./test5b
+	Enter a value: 200
+	The new value is 400
+	$
+	$ ./test5b
+	Enter a value: 1000
+	The new value is 2000
+	$
++ Using variables in functions:
+	$ cat test6
+	#!/bin/bash
+	# passing parameters to a function
+
+	function addem {
+	   if [ $# -eq 0 ] || [ $# -gt 2 ]
+	   then
+	      echo -1
+	   elif [ $# -eq 1 ]
+	   then 
+	      echo $[ $1 + $1 ]
+	   else
+	      echo $[ $1 + $2 ]
+	   fi
+	}
+
+	echo -n "Adding 10 and 15: "
+	value=$(addem 10 15)
+	echo $value
+	echo -n "Let's try adding just one number: "
+	value=$(addem 10)
+	echo $value
+	echo -n "Now trying adding no numbers: "
+	value=$(addem)
+	echo $value
+	echo -n "Finally, try adding three numbers: "
+	value=$(addem 10 15 20)
+	echo $value
+	$
+	$ ./test6
+	Adding 10 and 15: 25
+	Let's try adding just one number: 20
+	Now trying adding no numbers: -1
+	Finally, try adding three numbers: -1
+	$
+	-----------------------------------------------
+	$ cat test7
+	#!/bin/bash
+	# trying to access script parameters inside a function
+
+	function func7 {
+	   echo $[ $1 * $2 ]
+	}
+
+	if [ $# -eq 2 ]
+	then
+	   value=$(func7 $1 $2)
+	   echo "The result is $value"
+	else
+	   echo "Usage: badtest1 a b"
+	fi
+	$
+	$ ./test7
+	Usage: badtest1 a b
+	$ ./test7 10 15
+	The result is 150
+	$
++ Handling variables in a function:
+	- Functions use two types of variables:
+		Global
+		Local
+	- Global variables are variables that are valid anywhere within the shell script.
+	-----------------------------------------------------------
+	$ cat test8
+	#!/bin/bash
+	# using a global variable to pass a value
+
+	function dbl {
+	   value=$[ $value * 2 ]
+	}
+
+	read -p "Enter a value: " value
+	dbl
+	echo "The new value is: $value"
+	$
+	$ ./test8
+	Enter a value: 450
+	The new value is: 900
+	$
+	--------------------------------------------------------------
+	- $ cat badtest2
+	#!/bin/bash
+	# demonstrating a bad use of variables
+
+	function func1 {
+	   temp=$[ $value + 5 ]
+	   result=$[ $temp * 2 ]
+	}
+
+	temp=4
+	value=6
+
+	func1
+	echo "The result is $result"
+	if [ $temp -gt $value ]
+	then
+	   echo "temp is larger"
+	else
+	   echo "temp is smaller"
+	fi
+	$
+	$ ./badtest2
+	The result is 22
+	temp is larger
+	$
+	----------------------------------------------------------------------
+	- Instead of using global variables in functions, any variables that the function uses internally can be declared as local variables. To do that, just use the local keyword in front of the variable declaration:
+	local temp
+	--------------------------------------------------------------------------------
+	$ cat test9
+	#!/bin/bash
+	# demonstrating the local keyword
+
+	function func1 {
+	   local temp=$[ $value + 5 ]
+	   result=$[ $temp * 2 ]
+	}
+
+	temp=4
+	value=6
+
+	func1
+	echo "The result is $result"
+	if [ $temp -gt $value ]
+	then
+ 	   echo "temp is larger"
+	else
+	   echo "temp is smaller"
+	fi
+	$
+	$ ./test9
+	The result is 22
+	temp is smaller
+	$
++ Array Variables:
+	$ cat test10
+	#!/bin/bash
+	# array variable to function test
+
+	function testit {
+	   local newarray
+	   newarray=(;'echo "$@"')
+	   echo "The new array value is: ${newarray[*]}"
+	}
+
+	myarray=(1 2 3 4 5)
+	echo "The original array is ${myarray[*]}"
+	testit ${myarray[*]}
+	$
+	$ ./test10
+	The original array is 1 2 3 4 5
+	The new array value is: 1 2 3 4 5
+	$
+	----------------------------------------------------
+	$ cat test11
+	#!/bin/bash
+	# adding values in an array
+
+	function addarray {
+	   local sum=0
+	   local newarray
+	   newarray=($(echo "$@"))
+	   for value in ${newarray[*]}
+	   do
+	      sum=$[ $sum + $value ]
+	   done
+	   echo $sum
+	}
+
+	myarray=(1 2 3 4 5)
+	echo "The original array is: ${myarray[*]}"
+	arg1=$(echo ${myarray[*]})
+	result=$(addarray $arg1)
+	echo "The result is $result"
+	$
+	$ ./test11
+	The original array is: 1 2 3 4 5
+	The result is 15
+	$
++ Function recursion:
+	$ cat test13
+	#!/bin/bash
+	# using recursion
+
+	function factorial {
+	   if [ $1 -eq 1 ]
+	   then
+	      echo 1
+	   else
+	      local temp=$[ $1 - 1 ]
+	      local result=$(factorial $temp)
+	      echo $[ $result * $1 ]
+	   fi
+	}
+
+	read -p "Enter value: " value
+	result=$(factorial $value)
+	echo "The factorial of $value is: $result"
+	$
+	$ ./test13
+	Enter value: 5
+	The factorial of 5 is: 120
+	$
++ Creating a library
+	$ cat myfuncs
+	# my script functions
+
+	function addem {
+	   echo $[ $1 + $2 ]
+	}
+
+	function multem {
+	   echo $[ $1 * $2 ]
+	}
+
+	function divem {
+	   if [ $2 -ne 0 ]
+	   then
+	      echo $[ $1 / $2 ]
+	   else
+	      echo -1
+	   fi
+	}
+	$
+	-----------------------------------
+	$ cat test14
+	#!/bin/bash
+	# using functions defined in a library file
+
+	. ./myfuncs
+
+	value1=10
+	value2=5
+	result1=$(addem $value1 $value2)
+	result2=$(multem $value1 $value2)
+	result3=$(divem $value1 $value2)
+	echo "The result of adding them is: $result1"
+	echo "The result of multiplying them is: $result2"
+	echo "The result of dividing them is: $result3"
+	$
+	$ ./test14
+	The result of adding them is: 15
+	The result of multiplying them is: 50
+	The result of dividing them is: 2
+	$
+---------------------------------------------------------------------
+* Sed
+---------------------------------------------------------------------
++ The sed editor is called a stream editor, as opposed to a normal interactive text editor. In an interactive text editor, such as vim, you interactively use keyboard commands to insert, delete, or
+replace text in the data. A stream editor edits a stream of data based on a set of rules you supply ahead of time, before the editor processes the data.
++ Here’s the format for using the sed command:
+	sed options script file
++ 	-e script 	Adds commands specifi ed in the script to the commands run while processing the input
+	-f file 	Adds the commands specifi ed in the fi le to the commands run while processing the input
+	-n 		Doesn’t produce output for each command, but waits for the print command
+	-----------------------------------------------------------
+	$ echo "This is a test" | sed 's/test/big test/'
+	This is a big test
+	$
+	------------------------------------------------------------
+	$ cat data1.txt
+	The quick brown fox jumps over
+	The quick brown fox jumps over
+	The quick brown fox jumps over
+	The quick brown fox jumps over
+	$
+	$ sed 's/dog/cat/' data1.txt
+	The quick brown fox jumps over
+	The quick brown fox jumps over
+	The quick brown fox jumps over
+	The quick brown fox jumps over
+	$
+	---------------------------------------------------------------
+	$ sed -e 's/brown/green/; s/dog/cat/' data1.txt
+	The quick green fox jumps over the lazy cat.
+	The quick green fox jumps over the lazy cat.
+	The quick green fox jumps over the lazy cat.
+	The quick green fox jumps over the lazy cat.
+	$
+	-------------------------------------------------------------
+	$ sed -e '
+	> s/brown/green/
+	> s/fox/elephant/
+	> s/dog/cat/' data1.txt
+	The quick green elephant jumps over the lazy cat.
+	The quick green elephant jumps over the lazy cat.
+	The quick green elephant jumps over the lazy cat.
+	The quick green elephant jumps over the lazy cat.
+	$
++ Reading editor commands from a file:
+	$ cat script1.sed
+	s/brown/green/
+	s/fox/elephant/
+	s/dog/cat/
+	$
+	$ sed -f script1.sed data1.txt
+	The quick green elephant jumps over the lazy cat.
+	The quick green elephant jumps over the lazy cat.
+	The quick green elephant jumps over the lazy cat.
+	The quick green elephant jumps over the lazy cat.
+
