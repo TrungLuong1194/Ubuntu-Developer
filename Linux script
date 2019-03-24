@@ -1140,7 +1140,8 @@ rwx 	        111 	7 	Read, write, and execute permissions
 replace text in the data. A stream editor edits a stream of data based on a set of rules you supply ahead of time, before the editor processes the data.
 + Here’s the format for using the sed command:
 	sed options script file
-+ 	-e script 	Adds commands specifi ed in the script to the commands run while processing the input
++ Sed options:	
+	-e script 	Adds commands specifi ed in the script to the commands run while processing the input
 	-f file 	Adds the commands specifi ed in the fi le to the commands run while processing the input
 	-n 		Doesn’t produce output for each command, but waits for the print command
 	-----------------------------------------------------------
@@ -1188,4 +1189,125 @@ replace text in the data. A stream editor edits a stream of data based on a set 
 	The quick green elephant jumps over the lazy cat.
 	The quick green elephant jumps over the lazy cat.
 	The quick green elephant jumps over the lazy cat.
+---------------------------------------------------------------------
+* Sed
+---------------------------------------------------------------------
++ Here’s the basic format of the gawk program:
+	gawk options program file
++ Gawk options:
+	-F fs 		Specifies a file separator for delineating data fields in a line
+	-f file 	Specifies a file name to read the program from
+	-v var=value 	Defines a variable and default value used in the gawk program
+	-mf N 		Specifies the maximum number of fields to process in the data file
+	-mr N 		Specifies the maximum record size in the data file
+	-W keyword 	Specifies the compatibility mode or warning level for gawk
++ Using data field variables:
+	- $0 represents the entire line of text.
+	- $1 represents the first data field in the line of text.
+	- $2 represents the second data field in the line of text.
+	- $n represents the nth data field in the line of text.
+	-----------------------------------------------------
+	$ cat data2.txt
+	One line of test text.
+	Two lines of test text.
+	Three lines of test text.
+	$
+	$ gawk '{print $1}' data2.txt
+	One
+	Two
+	Three
+	$
+	-----------------------------------------------------
+	- If you’re reading a file that uses a different field separation character, you can specify it by using the -F option: (Dau :)
+	$ gawk -F: '{print $1}' /etc/passwd
+	root
+	bin
+	daemon
+	adm
+	lp
+	sync
+	shutdown
+	halt
+	mail
+	[...]
++ Using multiple commands:
+	$ gawk '{
+	> $4="Christine"
+	> print $0}'
+	My name is Rich
+	My name is Christine
+	$
++ Reading the program from a file
+	$ cat script3.gawk
+	{
+	text = "'s home directory is "
+	print $1 text $6
+	}
+	$
+	$ gawk -F: -f script3.gawk /etc/passwd
+	root's home directory is /root
+	bin's home directory is /bin
+	daemon's home directory is /sbin
+	adm's home directory is /var/adm
+	lp's home directory is /var/spool/lpd
+	[...]
+	Christine's home directory is /home/Christine
+	Samantha's home directory is /home/Samantha
+	Timothy's home directory is /home/Timothy
+	$
++ Running scripts before processing data:
+	$ cat data3.txt
+	Line 1
+	Line 2
+	Line 3
+	$
+	$ gawk 'BEGIN {print "The data3 File Contents:"}
+	> {print $0}' data3.txt
+	The data3 File Contents:
+	Line 1
+	Line 2
+	Line 3
+	$
++ Running scripts after processing data:
+	$ gawk 'BEGIN {print "The data3 File Contents:"}
+	> {print $0}
+	> END {print "End of File"}' data3.txt
+	The data3 File Contents:
+	Line 1
+	Line 2
+	Line 3
+	End of File
+	$
+	---------------------------------------------------
+	$ cat script4.gawk
+	BEGIN {
+	print "The latest list of users and shells"
+	print " UserID \t Shell"
+	print "-------- \t -------"
+	FS=":"
+	}
+
+	{
+	print $1 "	\t " $7
+	}
+
+	END {
+	print "This concludes the listing"
+	}
+	$
+
+	$ gawk -f script4.gawk /etc/passwd
+	The latest list of users and shells
+	UserID		Shell
+	--------	-------
+	root		/bin/bash
+	bin		/sbin/nologin
+	daemon		/sbin/nologin
+	[...]
+	Christine	/bin/bash
+	mysql		/bin/bash
+	Samantha	/bin/bash
+	Timothy		/bin/bash
+	This concludes the listing
+	$
 
