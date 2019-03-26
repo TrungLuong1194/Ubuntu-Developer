@@ -40,3 +40,7 @@ D // Xoa tu con tro toi cuoi dong
 /parttern // Search for parttern
 n // Tiep tuc search tu tiep theo
 N // Search theo chieu nguoc lai 
+-------------------------------------
+* Open file pdf
+-------------------------------------
+xdg-open file
