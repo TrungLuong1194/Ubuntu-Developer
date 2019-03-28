@@ -1490,3 +1490,107 @@ You can also group more than one command together for a specifi c address:
 	This is yet another line.
 	This is the last line in the file.
 	$
++ Transforming characters:
+	[address]y/inchars/outchars/
+	--------------------------------------------------
+	$ sed 'y/123/789/' data8.txt
+	This is line number 7.
+	This is line number 8.
+	This is line number 9.
+	This is line number 4.
+	This is line number 7 again.
+	This is yet another line.
+	This is the last line in the file.
+	$
+	------------------------------------------------------
+	$ echo "This 1 is a test of 1 try." | sed 'y/123/456/'
+	This 4 is a test of 4 try.
+	$
++ Printing lines:
+	$ echo "this is a test" | sed 'p'
+	this is a test
+	this is a test
+	$
+	-----------------------------------------------
+	$ cat data6.txt
+	This is line number 1.
+	This is line number 2.
+	This is line number 3.
+	This is line number 4.
+	$
+	$ sed -n '/number 3/p' data6.txt
+	This is line number 3.
+	$
+	--------------------------------------------
+	$ sed -n '2,3p' data6.txt
+	This is line number 2.
+	This is line number 3.
+	$
+	----------------------------------------------
+	$ sed -n '/3/{
+	> p
+	> s/line/test/p
+	> }' data6.txt
+	This is line number 3.
+	This is test number 3.
+	$
++ Printing line numbers:
+	$ cat data1.txt
+	The quick brown fox jumps over the lazy dog.
+	The quick brown fox jumps over the lazy dog.
+	The quick brown fox jumps over the lazy dog.
+	The quick brown fox jumps over the lazy dog.
+	$
+	$ sed '=' data1.txt
+	1
+	The quick brown fox jumps over the lazy dog.
+	2
+	The quick brown fox jumps over the lazy dog.
+	3
+	The quick brown fox jumps over the lazy dog.
+	4
+	The quick brown fox jumps over the lazy dog.
+	-----------------------------------------------
+	$ sed -n '/number 4/{
+	> =
+	> p
+	> }' data6.txt
+	4
+	This is line number 4.
+	$
++ Listing lines:
+	$ cat data9.txt
+	This	line	contains	tabs.
+	$
+	$ sed -n 'l' data9.txt
+	This\tline\tcontains\ttabs.$
+	$
++ Using files with sed:
+	- Writing to a file:
+		[address]w filename
+	--------------------------------------------
+	$ sed '1,2w test.txt' data6.txt
+	This is line number 1.
+	This is line number 2.
+	This is line number 3.
+	This is line number 4.
+	$
+	$ cat test.txt
+	This is line number 1.
+	This is line number 2.
+	$
+	---------------------------------------------
+	$ cat data11.txt
+	Blum, R		Browncoat
+	McGuiness, A 	Alliance
+	Bresnahan, C 	Browncoat
+	Harken, C	Alliance
+	$
+	$ sed -n '/Browncoat/w Browncoats.txt' data11.txt
+	$
+	$ cat Browncoats.txt
+	Blum, R		Browncoat
+	Bresnahan, C 	Browncoat
+	$
+	------------------------------------------------
+	- Reading data from a file
