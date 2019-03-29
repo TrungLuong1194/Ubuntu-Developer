@@ -1594,3 +1594,5 @@ You can also group more than one command together for a specifi c address:
 	$
 	------------------------------------------------
 	- Reading data from a file
+		[address]r filename
+
