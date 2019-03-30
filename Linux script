@@ -1880,3 +1880,75 @@ You can also group more than one command together for a specifi c address:
 	$ echo "beeat" | gawk '/b[ae]+t/{print $0}'
 	beeat
 	$
+	----------------------------------------------------------------
+	- Using braces: 
+	- Cause: By default, the gawk program doesn’t recognize regular expression intervals. You must specify the --re-interval command line option for the gawk program to recognize regular expression intervals.
+	------------------------------------------------------------------
+	$ echo "bt" | gawk --re-interval '/be{1}t/{print $0}'
+	$
+	$ echo "bet" | gawk --re-interval '/be{1}t/{print $0}'
+	bet
+	$ echo "beet" | gawk --re-interval '/be{1}t/{print $0}'
+	$
+	------------------------------------------------------------------
+	$ echo "bt" | gawk --re-interval '/be{1,2}t/{print $0}'
+	$	
+	$ echo "bet" | gawk --re-interval '/be{1,2}t/{print $0}'
+	bet	
+	$ echo "beet" | gawk --re-interval '/be{1,2}t/{print $0}'
+	beet	
+	$ echo "beeet" | gawk --re-interval '/be{1,2}t/{print $0}'
+	$
+	----------------------------------------------------------------
+	- The pipe symbol:
+	expr1|expr2|...
+	----------------------------------------------------------------
+	$ echo "The cat is asleep" | gawk '/cat|dog/{print $0}'
+	The cat is asleep
+	$ echo "The dog is asleep" | gawk '/cat|dog/{print $0}'
+	The dog is asleep
+	$ echo "The sheep is asleep" | gawk '/cat|dog/{print $0}'
+	$
+	---------------------------------------------------------------
+	- Grouping:
+	---------------------------------------------------------------
+	$ echo "cat" | gawk '/(c|b)a(b|t)/{print $0}'
+	cat
+	$ echo "cab" | gawk '/(c|b)a(b|t)/{print $0}'
+	cab
+	$ echo "bat" | gawk '/(c|b)a(b|t)/{print $0}'
+	bat
+	$ echo "bab" | gawk '/(c|b)a(b|t)/{print $0}'
+	bab
+	$ echo "tab" | gawk '/(c|b)a(b|t)/{print $0}'
+	$
+	$ echo "tac" | gawk '/(c|b)a(b|t)/{print $0}'
+	$
++ Validating a phone number:
+	$ cat isphone
+	#!/bin/bash
+	# script to filter out bad phone numbers
+	gawk --re-interval '/^\(?[2-9][0-9]{2}\)?(| |-|\.)[0-9]{3}( |-|\.)[0-9]{4}/{print $0}'
+	$
+	$ echo "317-555-1234" | ./isphone
+	317-555-1234
+	$ echo "000-555-1234" | ./isphone
+	$ echo "312 555-1234" | ./isphone
+	312 555-1234
+	$
+	-------------------------------------------------------------------------------
+	$ cat phonelist
+	000-000-0000
+	123-456-7890
+	212-555-1234
+	(317)555-1234
+	(202) 555-9876
+	33523
+	1234567890
+	234.123.4567
+	$ cat phonelist | ./isphone
+	212-555-1234
+	(317)555-1234
+	(202) 555-9876
+	234.123.4567
+	$
