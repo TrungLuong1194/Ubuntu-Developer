@@ -1952,3 +1952,250 @@ You can also group more than one command together for a specifi c address:
 	(202) 555-9876
 	234.123.4567
 	$
+---------------------------------------------------------------------
+* Advanced sed 
+---------------------------------------------------------------------
++ Looking at multiline commands:
+	- Combining lines of text:
+	$ cat data2.txt
+	This is the header line.
+	This is the first data line.
+	This is the second data line.
+	This is the last line.
+	$
+	$ sed '/first/{ N ; s/\n/ / }' data2.txt
+	This is the header line.
+	This is the first data line. This is the second data line.
+	This is the last line.
+	$
+	//
+	The sed editor script searches for the line of text that contains the word “first” in it. When
+	it finds the line, it uses the N command to combine the next line with that line. It then
+	uses the substitution command (s) to replace the newline character with a space. The
+	result is that the two lines in the text file appear as one line in the sed editor output.
+	-------------------------------------------------------------------------------
+	$ cat data4.txt
+	On Tuesday, the Linux System
+	Administrator's group meeting will be held.
+	All System Administrators should attend.
+	$
+	$ sed 'N
+	> s/System\nAdministrator/Desktop\nUser/
+	> s/System Administrator/Desktop User/
+	> ' data4.txt
+	On Tuesday, the Linux Desktop
+	User's group meeting will be held.
+	All System Administrators should attend.
+	$
+	-------------------------------------------------------------------------------
+	$ sed '
+	> s/System Administrator/Desktop User/
+	> N
+	> s/System\nAdministrator/Desktop\nUser/
+	> ' data4.txt
+	On Tuesday, the Linux Desktop
+	User's group meeting will be held.
+	All Desktop Users should attend.
+	$
+	-----------------------------------------------------------------
+	- Multiline delete command:
+	----------------------------------------------------------------
+	$ sed 'N ; /System\nAdministrator/d' data4.txt
+	All System Administrators should attend.
+	$
+	----------------------------------------------------------------
+	$ sed 'N ; /System\nAdministrator/D' data4.txt
+	Administrator's group meeting will be held.
+	All System Administrators should attend.
+	$
+	---------------------------------------------------------------
+	- Holding space:
+		The pattern space is an active buffer area that holds the text examined by the sed editor
+		while it processes commands. However, it isn’t the only space available in the sed editor for
+		storing text.
+		The sed editor utilizes another buffer area called the hold space. You can use the hold
+		space to temporarily hold lines of text while working on other lines in the pattern space.
+	Command 	Description
+	  h 		Copies pattern space to hold space
+	  H 		Appends pattern space to hold space
+	  g 		Copies hold space to pattern space
+	  G 		Appends hold space to pattern space
+	  x 		Exchanges contents of pattern and hold spaces
+	-------------------------------------------------------------------
+	$ cat data2.txt
+	This is the header line.
+	This is the first data line.
+	This is the second data line.
+	This is the last line.
+	$
+	$ sed -n '/first/ {h ; p ; n ; p ; g ; p }' data2.txt
+	This is the first data line.
+	This is the second data line.
+	This is the first data line.
+	$
+	//
+	1. The sed script uses a regular expression in the address to fi lter the line containing
+	the word first.
+	2. When the line containing the word first appears, the initial command in {}, the
+	h command, places the line in the hold space.
+	3. The next command, the p command, prints the contents of the pattern space,
+	which is still the fi rst data line.
+	4. The n command retrieves the next line in the data stream
+	(This is the second data line) and places it in the pattern space.
+	5. The p command prints the contents of the pattern space, which is now the second
+	data line.
+	6. The g command places the contents of the hold space
+	(This is the first data line) back into the pattern space, replacing the
+	current text.
+	7. The p command prints the current contents of the pattern space, which is now back
+	to the first data line.
++ Changing the flow:
+	- Branching:
+	$ cat data2.txt
+	This is the header line.
+	This is the first data line.
+	This is the second data line.
+	This is the last line.
+	$
+	$ sed '{2,3b ; s/This is/Is this/ ; s/line./test?/}' data2.txt
+	Is this the header test?
+	This is the first data line.
+	This is the second data line.
+	Is this the last test?
+	$
+	--------------------------------------------------------
+	$ sed '{/first/b jump1 ; s/This is the/No jump on/
+	> :jump1
+	> s/This is the/Jump here on/}' data2.txt
+	No jump on header line
+	Jump here on first data line
+	No jump on second data line
+	No jump on last line
+	$
+	-------------------------------------------------------
+	- Testing:
+	------------------------------------------------------
+	$ sed '{
+	> s/first/matched/
+	> t
+	> s/This is the/No match on/
+	> }' data2.txt
+	No match on header line
+	This is the matched data line
+	No match on second data line
+	No match on last line
+	$
++ Replacing via a Pattern:
+	- Using the ampersand: &
+	$ echo "The cat sleeps in his hat." | sed 's/.at/"&"/g'
+	The "cat" sleeps in his "hat".
+	$
+	// g, indicating that new text should be substituted for all occurrences of the existing text.
++ Placing sed commands in scripts:
+	- Using wrappers:
+	$ cat reverse.sh
+	#!/bin/bash
+	# Shell wrapper for sed editor script.
+	#		to reverse text file lines.
+	#
+	sed -n '{ 1!G ; h ; $p }' $1
+	#
+	$
+	$ ./reverse.sh data2.txt
+	This is the last line.
+	This is the second data line.
+	This is the first data line.
+	This is the header line.
+	$
++ Creating sed utilities:
+	- Spacing with double lines:
+	$ sed '$!G' data2.txt
+	This is the header line.
+
+	This is the first data line.
+
+	This is the second data line.
+
+	This is the last line.
+	$
+	--------------------------------------------------
+	- Numbering lines:
+	$ sed '=' data2.txt | sed 'N; s/\n/ /'
+	1 This is the header line.
+	2 This is the first data line.
+	3 This is the second data line.
+	4 This is the last line.
+	$
+	---------------------------------------------------
+	- Deleteing consecutive blank lines:
+	$ cat data8.txt
+	This is line one.
+
+
+	This is line two.
+
+	This is line three.
+
+
+
+	This is line four.
+	$
+	$ sed '/./,/^$/!d' data8.txt
+	This is line one.
+
+	This is line two.
+
+	This is line three.
+
+	This is line four.
+	$
+	---------------------------------------------------
+	- Deleting leading blank lines:
+	$ cat data9.txt
+
+
+	This is line one.
+
+	This is line two.
+	$
+	$ sed '/./,$!d' data9.txt
+	This is line one.
+
+	This is line two.
+	$
+	--------------------------------------------------------
+	- Deleting trailing blank lines:
+	$ cat data10.txt
+	This is the first line.
+	This is the second line.
+
+
+
+	$ sed '{
+	> :start
+	> /^\n*$/{$d ; N ; b start }
+	> }' data10.txt
+	This is the first line.
+	This is the second line.
+	$
+	---------------------------------------------------------
+	- Removing HTML tags:
+	$ cat data11.txt
+	<html>
+	<head>
+	<title>This is the page title</title>
+	</head>
+	<body>
+	<p>
+	This is the <b>first</b> line in the Web page.
+	This should provide some <i>useful</i>
+	information to use in our sed script.
+	</body>
+	</html>
+	$
+	$ sed 's/<[^>]*>//g ; /^$/d' data11.txt
+	This is the page title
+	This is the first line in the Web page.
+	This should provide some useful
+	information to use in our sed script.
+	$	
