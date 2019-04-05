@@ -2587,3 +2587,113 @@ You can also group more than one command together for a specifi c address:
 	Average: 137.7
 	Average: 176.7
 	$
++ Built-in functions:
+	- Mathematical functions:
+	Function 	Description
+	atan2(x, y) 	The arctangent of x / y, with x and y specified in radians
+	cos(x) 		The cosine of x, with x specified in radians
+	exp(x) 		The exponential of x
+	int(x) 		The integer part of x, truncated toward 0
+	log(x) 		The natural logarithm of x
+	rand() 		A random floating point value larger than 0 and less than 1
+	sin(x) 		The sine of x, with x specified in radians
+	sqrt(x) 	The square root of x
+	srand(x) 	Specifies a seed value for calculating random numbers
+	-------------------------------------------------------------------
+	- String functions:
+	Function 		Description
+	asort(s [,d]) 		This function sorts an array s based on the data element values.
+				The index values are replaced with sequential numbers indicating 
+				the new sort order. Alternatively, the new sorted array is
+				stored in array d if specifi ed.
+	asorti(s [,d]) 		This function sorts an array s based on the index values. The
+				resulting array contains the index values as the data element values, 
+				with sequential number indexes indicating the sort order.
+				Alternatively, the new sorted array is stored in array d if specifi ed.
+	gensub(r, s, h [, t]) 	This function searches either the variable $0, or the target string
+				t if supplied, for matches of the regular expression r. If h is a
+				string beginning with either g or G, it replaces the matching text
+				with s. If h is a number, it represents which occurrence of r to
+				replace.
+	gsub(r, s [,t]) 	This function searches either the variable $0, or the target string
+				t if supplied, for matches of the regular expression r. If found, it
+				substitutes the string s globally.
+	index(s, t) 		This function returns the index of the string t in string s, or 0 if
+				not found.
+	length([s]) 		This function returns the length of string s, or if not specifi ed, the
+				length of $0.
+	match(s, r [,a]) 	This function returns the index of the string s where the regular
+				expression r occurs. If array a is specifi ed, it contains the portion
+				of s that matches the regular expression.
+	split(s, a [,r]) 	This function splits s into array a using either the FS character, or
+				the regular expression r if supplied. It returns the number of
+				fi elds.
+	sprintf(format,
+	variables) 		This function returns a string similar to the output of printf
+				using the format and variables supplied.
+	sub(r, s [,t]) 		This function searches either the variable $0, or the target string
+				t, for matches of the regular expression r. If found, it substitutes
+				the string s for the fi rst occurrence.
+	substr(s, i [,n]) 	This function returns the nth character substring of s, starting at
+				index i. If n is not supplied, the rest of s is used.
+	tolower(s) 		This function converts all characters in s to lowercase.
+	toupper(s) 		This function converts all characters in s to uppercase.
+	---------------------------------------------------------------------------
+	$ gawk 'BEGIN{x = "testing"; print toupper(x); print length(x) }'
+	TESTING
+	7
+	$
++ User-defined functions:
+	- Defining a function:
+	function name([variables])
+	{
+	   statements
+	}
+	------------------------------------------------------------------------
+	function myrand(limit)
+	{
+	   return int(limit * rand())
+	}
+	----------------------------------------------------------------------
+	- Using your functions:
+	---------------------------------------------------------------------
+	$ gawk '
+	> function myprint()
+	> {
+	>     printf "%-16s - %s\n", $1, $4
+	> }
+	> BEGIN{FS="\n"; RS=""}
+	> {
+	>     myprint()
+	> }' data2
+	Riley Mullen     - (312)555-1234
+	Frank Williams   - (317)555-9876
+	Haley Snell      - (313)555-4938
+	$
+	----------------------------------------------------------------------
+	- Creating a function library:
+	----------------------------------------------------------------------
+	$ cat funclib
+	function myprint()
+	{
+	   printf "%-16s - %s\n", $1, $4
+	}
+	function myrand(limit)
+	{
+	   return int(limit * rand())
+	}
+	function printthird()
+	{
+	   print $3
+	}
+	$
+	$ cat script4
+	BEGIN{ FS="\n"; RS=""}
+	{
+	    myprint()
+	}
+	$ gawk -f funclib -f script4 data2
+	Riley Mullen     - (312)555-1234
+	Frank Williams   - (317)555-9876
+	Haley Snell      - (313)555-4938
+	$	
