@@ -1,0 +1,3 @@
+Open Menu: Ctr + n
+Back to menu: Ctr + ww
+Open help or close help: ?
